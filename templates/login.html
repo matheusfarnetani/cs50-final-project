@@ -17,11 +17,18 @@
     </div>
     <form class="login-form" action="/login" method="post">
       <div class="login-username">
-        <i class="icon"></i>
-        <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="username" name="username" placeholder="Username" type="text" required>
+        <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="username" name="username"
+          placeholder="Username" type="text" required>
+          {% if usernameError %}
+          <label for="username">Invalid username</label>
+          {% endif %}
       </div>
       <div class="login-password">
-        <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="password" name="password" placeholder="Password" type="password" required>
+        <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="password" name="password"
+          placeholder="Password" type="password" required>
+          {% if passwordError %}
+          <label for="username">Invalid password</label>
+          {% endif %}
       </div>
       <div class="login-button">
         <button class="login" type="submit">LOGIN</button>
