@@ -1,9 +1,10 @@
-from flask import Flask, flash, redirect, render_template, request, session
+from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from helpers import login_required
-from helpersdb import query_username
+from helpersdb import query_username, create_new_user, get_by_username
+from hlpwtforms import RegistrationForm, LoginForm
 
 app = Flask(__name__)
 
@@ -37,31 +38,17 @@ def login():
     # Clean session
     session.clear()
 
-    if request.method == "POST":
+    # Get form with WTForms
+    form = LoginForm(request.form)
 
-        # Ensure username and password was submitted
-        inputtedUsername = request.form.get("username")
-        if not inputtedUsername:
-            flash("No username was received.")
-            return redirect("/login")
-        inputtedPassword = request.form.get("password")
-        if not inputtedPassword:
-            flash("No password was received..")
-            return redirect("/login")
+    if request.method == "POST" and form.validate():
 
-        print(inputtedUsername, inputtedPassword)
-
-        # Query database for username
-        user_data = query_username(inputtedUsername)
-        if user_data == None:
-            return render_template("login.html", usernameError=True)
-        
-        print(user_data)
-        print(user_data["id"], user_data["username"], user_data["hash"], user_data["cash"])
+        # Get data from database
+        user_data = get_by_username(form.username.data)
 
         # Ensure password is correct
-        if not check_password_hash(user_data["hash"], inputtedPassword):
-            return render_template("login.html", passwordError=True)
+        if not check_password_hash(user_data["hash"], form.password.data):
+            return render_template("login.html", form=form)
 
         # Store user's id
         session["user_id"] = user_data["id"]
@@ -69,12 +56,31 @@ def login():
         # Redirect to main page
         return redirect("/")
 
-    return render_template("login.html")
+    return render_template("login.html", form=form)
 
 
-@app.route("/register")
+@app.route('/register', methods=['GET', 'POST'])
 def register():
-    ...
+
+    # Get form with WTForms
+    form = RegistrationForm(request.form)
+
+    if request.method == 'POST' and form.validate():
+
+        # Create dict
+        newUser = {'username': form.username.data,
+                   'email': form.email.data,
+                   'hash': generate_password_hash(form.password.data),
+                   'type': form.type.data}
+
+        # Register
+        resultRegister = create_new_user(newUser)
+        if not resultRegister:
+            return render_template('register.html')
+
+        return redirect(url_for('login'))
+    
+    return render_template('register.html', form=form)
 
 
 # Change flask config when using 'python app.py'
