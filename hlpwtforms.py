@@ -1,4 +1,4 @@
-from wtforms import Form, BooleanField, StringField, PasswordField, EmailField, SelectField, validators
+from wtforms import Form, BooleanField, StringField, PasswordField, EmailField, SelectField, DateField, TimeField, validators
 from helpersdb import check_username
 import re
 
@@ -44,3 +44,13 @@ class RegistrationForm(Form):
 class LoginForm(Form):
     username = StringField('Username', [validators.DataRequired(), validateUsernameExistence])
     password = PasswordField('Password', [validators.DataRequired()])
+
+
+class SearchTable(Form):
+    name = StringField('Name', render_kw={"placeholder": "Search by name"})
+    type = SelectField('User type', choices=[
+        ('student', 'student'),
+        ('collaborator', 'collaborator'),
+        ('visitor', 'visitor')])
+    date = DateField('Date', render_kw={"placeholder": "Search by date"})
+    time = TimeField('Time', render_kw={"placeholder": "Search by local"})

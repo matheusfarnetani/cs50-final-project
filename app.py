@@ -4,7 +4,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from helpers import login_required
 from helpersdb import query_username, create_new_user, get_by_username
-from hlpwtforms import RegistrationForm, LoginForm
+from hlpwtforms import RegistrationForm, LoginForm, SearchTable
 
 app = Flask(__name__)
 
@@ -32,6 +32,13 @@ def overview():
     return render_template("overview.html")
 
 
+@app.route('/graphs')
+@login_required
+def graph():
+
+    return render_template('graphs.html')
+
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
 
@@ -45,6 +52,8 @@ def login():
 
         # Get data from database
         user_data = get_by_username(form.username.data)
+        if user_data == None:
+            return redirect("/login")
 
         # Ensure password is correct
         if not check_password_hash(user_data["hash"], form.password.data):
@@ -57,6 +66,15 @@ def login():
         return redirect("/")
 
     return render_template("login.html", form=form)
+
+
+@app.route('/logout')
+@login_required
+def logout():
+
+    session.clear()
+
+    return redirect('/login')
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -79,8 +97,36 @@ def register():
             return render_template('register.html')
 
         return redirect(url_for('login'))
-    
+
     return render_template('register.html', form=form)
+
+
+@app.route('/tables')
+@login_required
+def tables():
+
+    # Creating 'route's args'
+    argsName = request.args.get('name')
+    argsDate = request.args.get('date')
+    argsTime = request.args.get('time')
+    argsType = request.args.get('type')
+    argsLocal = request.args.get('local')
+
+    # Create WTForm
+    form = SearchTable(request.form)
+
+    # To rememeber \/
+    #?q=100&w=200
+    q = request.args.get('q')
+    print(q)
+    w = request.args.get('w')
+    print(w)
+
+    # Create conditionals with args
+    # if argsName:
+        
+
+    return render_template('tables.html', form=form)
 
 
 # Change flask config when using 'python app.py'

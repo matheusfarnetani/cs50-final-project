@@ -1,0 +1,94 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.row {
+    display: flex;
+}
+
+.column-right {
+    background-color: #2f2f2f;
+    float: left;
+    height: 100vh;
+    width: 80vw;
+}
+
+.column-left {
+    align-items: center;
+    background-color: #2a2a2a;
+    display: flex;
+    flex-direction: column;
+    float: left;
+    width: 20vw;
+}
+
+.cl-row-top {
+    margin: 0;
+    padding: 0;
+}
+
+.cl-row-bottom {
+    margin: 15px 0 0 0;
+    padding: 0;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-header h1 {
+    color: #FFFCFA;
+    font-family: 'Roboto';
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 30px 0 0 20px;
+    padding: 0;
+}
+
+.main-header h2 {
+    color: #FFFCFA;
+    font-family: 'Roboto';
+    font-size: 1.7rem;
+    font-weight: 300;
+    margin: 0 0 0 20px;
+    padding: 0;
+}
+
+ul {
+    margin: 30px 0 0 0;
+    padding: 0;
+    list-style-type: none;
+    width: 200px;
+}
+
+li a {
+    color: #B2B6A7;
+    display: block;
+    font-family: 'Roboto';
+    font-size: 1rem;
+    font-weight: 400;
+    padding: 8px 16px;
+    text-decoration: none;
+}
+
+/* Change the link color on hover */
+li a:hover {
+    color: #C0A754;
+}
+
+.local {
+    background-color: #C0A754;
+    border: none;
+    border-radius: 0.1rem;
+    color: #2f2f2f;
+    font-family: 'Roboto';
+    font-weight: 500;
+    font-size: 1rem;
+    margin: 5px 0 5px 0;
+    padding: 3px;
+    width: 15vw
+}
+
+.local:hover {
+    background-color: #B2B6A7;
+}

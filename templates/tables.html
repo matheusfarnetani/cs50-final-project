@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+
+{% block title %}
+System's Overview
+{% endblock %}
+
+{% block buttons %}
+<div class="cl-row-bottom">
+  <button class="local">Predio A</button>
+  <button class="local">Predio B</button>
+  <button class="local">Predio C</button>
+  <button class="local">Predio D</button>
+  <button class="local">Predio E</button>
+  <button class="local">Predio F</button>
+  <button class="local">Portaria 01</button>
+  <button class="local">Portaria 02</button>
+  <button class="local">Portaria 03</button>
+  <button class="local">Biblioteca</button>
+  <button class="local">Hovet</button>
+</div>
+{% endblock %}
+
+{% block body %}
+<div class="column-right">
+
+  <div class="row">
+    <div class="main-header">
+      <h1>Tables</h1>
+      <h2>Checkout your tables</h2>
+    </div>
+  </div>
+
+  <div class="row">
+    {{ form.name }}
+  </div>
+
+  <div class="row">
+    {{ form.type }}
+    {{ form.date }}
+    {{ form.time }}
+  </div>
+
+  <div class="row">
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Hour</th>
+          <th>Minute</th>
+          <th>Second</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>31/12/31</td>
+          <td>24</td>
+          <td>60</td>
+          <td>60</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

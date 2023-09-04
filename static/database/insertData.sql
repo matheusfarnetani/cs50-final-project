@@ -1,0 +1,1 @@
+-- Insert base data in order to make the app work as expected
