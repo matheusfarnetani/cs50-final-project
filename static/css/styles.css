@@ -5,6 +5,7 @@ body {
 
 .row {
     display: flex;
+    width: 100%;
 }
 
 .column-right {
@@ -41,7 +42,7 @@ body {
     font-family: 'Roboto';
     font-size: 2.5rem;
     font-weight: 700;
-    margin: 30px 0 0 20px;
+    margin: 2rem 0 0 2rem;
     padding: 0;
 }
 
@@ -50,15 +51,15 @@ body {
     font-family: 'Roboto';
     font-size: 1.7rem;
     font-weight: 300;
-    margin: 0 0 0 20px;
+    margin: 0 0 0 2rem;
     padding: 0;
 }
 
 ul {
-    margin: 30px 0 0 0;
+    margin: 1rem 0 0 0;
     padding: 0;
     list-style-type: none;
-    width: 200px;
+    width: 15vw;
 }
 
 li a {
@@ -76,7 +77,7 @@ li a:hover {
     color: #C0A754;
 }
 
-.local {
+#local {
     background-color: #C0A754;
     border: none;
     border-radius: 0.1rem;
@@ -84,11 +85,45 @@ li a:hover {
     font-family: 'Roboto';
     font-weight: 500;
     font-size: 1rem;
-    margin: 5px 0 5px 0;
-    padding: 3px;
+    margin: 1rem 0 0 0;
+    padding: 0.2rem;
     width: 15vw
 }
 
-.local:hover {
+#local:hover {
     background-color: #B2B6A7;
+}
+
+table {
+    color: #FFFCFA;
+    background-color: #2a2a2a;
+    border-radius: 0.3rem;
+    font-family: 'Roboto';
+    font-size: 1rem;
+    font-weight: 400;
+    margin: 1rem 0 0 2rem;
+    padding: 0;
+    text-align: center;
+    width: 95%;
+    vertical-align: middle;
+}
+
+th {
+    background-color: #C0A754;
+    color: #2f2f2f;
+}
+
+th,
+td {
+    padding: 1rem;
+}
+
+tr:hover {
+    background-color: #FFFCFA;
+    color: #2f2f2f;
+}
+
+.search {
+    margin: 1rem 0 0 2rem;
+    padding: 0;
 }

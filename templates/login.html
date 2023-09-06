@@ -24,7 +24,7 @@
         {% if form.username.errors %}
         <div class="form-error">
           <ul>
-            {% for error in form.username.erros %}
+            {% for error in form.username.errors %}
             <li>{{ error }}</li>
             {% endfor %}
           </ul>
@@ -37,7 +37,7 @@
         {% if form.password.errors %}
         <div class="form-error">
           <ul>
-            {% for error in form.password.erros %}
+            {% for error in form.password.errors %}
             <li>{{ error }}</li>
             {% endfor %}
           </ul>

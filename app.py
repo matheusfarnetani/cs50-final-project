@@ -1,9 +1,9 @@
-from flask import Flask, flash, redirect, render_template, request, session, url_for
+from flask import Flask, flash, redirect, render_template, request, session, url_for, jsonify
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from helpers import login_required
-from helpersdb import query_username, create_new_user, get_by_username
+from helpersdb import query_username, create_new_user, get_by_username, get_locals, search_tables
 from hlpwtforms import RegistrationForm, LoginForm, SearchTable
 
 app = Flask(__name__)
@@ -89,7 +89,8 @@ def register():
         newUser = {'username': form.username.data,
                    'email': form.email.data,
                    'hash': generate_password_hash(form.password.data),
-                   'type': form.type.data}
+                   'type': form.type.data,
+                   'card': form.card.data}
 
         # Register
         resultRegister = create_new_user(newUser)
@@ -105,28 +106,30 @@ def register():
 @login_required
 def tables():
 
+    # Create WTForm
+    form = SearchTable(request.form)
+
+    rows_local = get_locals()
+    if not rows_local:
+        return redirect('/tables')
+
+    return render_template('tables.html', form=form, local_bt=rows_local)
+
+
+@app.route('/tables/search')
+@login_required
+def tablesSearch():
+
     # Creating 'route's args'
-    argsName = request.args.get('name')
+    argsCard = request.args.get('card')
     argsDate = request.args.get('date')
     argsTime = request.args.get('time')
     argsType = request.args.get('type')
     argsLocal = request.args.get('local')
 
-    # Create WTForm
-    form = SearchTable(request.form)
+    results = search_tables(card=argsCard, date=argsDate, time=argsTime, card_type=argsType, local=argsLocal)
 
-    # To rememeber \/
-    #?q=100&w=200
-    q = request.args.get('q')
-    print(q)
-    w = request.args.get('w')
-    print(w)
-
-    # Create conditionals with args
-    # if argsName:
-        
-
-    return render_template('tables.html', form=form)
+    return jsonify(results)
 
 
 # Change flask config when using 'python app.py'

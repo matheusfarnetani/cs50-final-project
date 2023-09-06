@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS users (
     hash TEXT NOT NULL,
     user_type TEXT CHECK(
         user_type IN ('student', 'collaborator', 'visitor')
-    ) card_id INTEGER NOT NULL,
+    ),
+    card_id INTEGER NOT NULL,
     FOREIGN KEY (card_id) REFERENCES cards(id)
 );
 CREATE UNIQUE INDEX username ON users (username);
@@ -14,8 +15,8 @@ CREATE UNIQUE INDEX username ON users (username);
 CREATE TABLE IF NOT EXISTS registers (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     date DATE NOT NULL,
-    hour INTEGER NOT NULL,
-    minute INTEGER NOT NULL,
+    hours INTEGER NOT NULL,
+    minutes INTEGER NOT NULL,
     seconds INTEGER NOT NULL
 );
 -- Table errors
@@ -30,14 +31,15 @@ CREATE TABLE IF NOT EXISTS errors (
 CREATE TABLE IF NOT EXISTS cards (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     type TEXT CHECK(type IN ('student', 'collaborator', 'visitor')) NOT NULL,
-    serial CHAR(10) NOT NULL
+    uid CHAR(11) NOT NULL
 );
+CREATE UNIQUE INDEX uid ON cards (uid);
 -- Table students
 CREATE TABLE IF NOT EXISTS students (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     name TEXT NOT NULL,
     birthday DATE NOT NULL,
-    reg_number CHAR(8) NOT NULL,
+    reg_number CHAR(8) NOT NULL,    
     course TEXT NOT NULL,
     year_beginned YEAR NOT NULL,
     year_finshed YEAR NOT NULL,
@@ -154,6 +156,8 @@ CREATE TABLE IF NOT EXISTS visitant_has_card (
 );
 -- Create triggers
 CREATE TRIGGER IF NOT EXISTS equipment_BEFORE_INSERT BEFORE
-INSERT ON equipment FOR EACH ROW BEGIN
-SET NEW.date_next_inspection = DATE(NEW.date_last_inspection, '+6 months');
+INSERT ON equipments BEGIN
+UPDATE equipments
+SET date_next_inspection = DATE(date_last_inspection, '+6 months')
+WHERE id = NEW.id;
 END;

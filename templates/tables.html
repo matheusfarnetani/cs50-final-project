@@ -4,21 +4,20 @@
 System's Overview
 {% endblock %}
 
+{% block javascript %}
+<script src="../static/js/tables.js"></script>
+{% endblock %}
+
+{% if local_bt %}
 {% block buttons %}
 <div class="cl-row-bottom">
-  <button class="local">Predio A</button>
-  <button class="local">Predio B</button>
-  <button class="local">Predio C</button>
-  <button class="local">Predio D</button>
-  <button class="local">Predio E</button>
-  <button class="local">Predio F</button>
-  <button class="local">Portaria 01</button>
-  <button class="local">Portaria 02</button>
-  <button class="local">Portaria 03</button>
-  <button class="local">Biblioteca</button>
-  <button class="local">Hovet</button>
+  <button id="local">All</button>
+  {% for local in local_bt %}
+  <button id="local">{{ local['name'] }}</button>
+  {% endfor %}
 </div>
 {% endblock %}
+{% endif %}
 
 {% block body %}
 <div class="column-right">
@@ -30,35 +29,20 @@ System's Overview
     </div>
   </div>
 
-  <div class="row">
-    {{ form.name }}
+  <div class="search">
+    <div class="row">
+      {{ form.card }}
+    </div>
+
+    <div class="row">
+      {{ form.type }}
+      {{ form.date }}
+      {{ form.time }}
+    </div>
   </div>
 
-  <div class="row">
-    {{ form.type }}
-    {{ form.date }}
-    {{ form.time }}
-  </div>
+  <div id="search-results">
 
-  <div class="row">
-    <table>
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Hour</th>
-          <th>Minute</th>
-          <th>Second</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>31/12/31</td>
-          <td>24</td>
-          <td>60</td>
-          <td>60</td>
-        </tr>
-      </tbody>
-    </table>
   </div>
 </div>
 {% endblock %}

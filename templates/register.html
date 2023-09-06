@@ -24,7 +24,20 @@
         {% if form.type.errors %}
         <div class="form-error">
           <ul>
-            {% for error in form.type.erros %}
+            {% for error in form.type.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+      </div>
+      <div class="register-card">
+        {{ form.card.label }}
+        {{ form.card }}
+        {% if form.card.errors %}
+        <div class="form-error">
+          <ul>
+            {% for error in form.card.errors %}
             <li>{{ error }}</li>
             {% endfor %}
           </ul>
