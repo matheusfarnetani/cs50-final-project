@@ -66,14 +66,14 @@ document.addEventListener('DOMContentLoaded', async function () {
         data.forEach(function (result) {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${result.date}</td>
-                <td>${result.hours}</td>
-                <td>${result.minutes}</td>
-                <td>${result.seconds}</td>
+                <td>${result['date']}</td>
+                <td>${result['hours']}</td>
+                <td>${result['minutes']}</td>
+                <td>${result['seconds']}</td>
                 <td>${result['card type']}</td>
                 <td>${result['card uid']}</td>
-                <td>${result.equipment}</td>
-                <td>${result.local}</td>
+                <td>${result['equipment']}</td>
+                <td>${result['local']}</td>
             `;
             table.appendChild(row);
         });

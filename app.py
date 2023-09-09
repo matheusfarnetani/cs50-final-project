@@ -4,7 +4,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from helpers import login_required
 from helpersdb import query_username, create_new_user, get_by_username, get_locals, search_tables
-from hlpwtforms import RegistrationForm, LoginForm, SearchTable
+from forms import RegistrationForm, LoginForm, SearchTable
 
 app = Flask(__name__)
 
