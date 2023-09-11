@@ -174,9 +174,9 @@ class Registers(Base):
     # Attributes
     id: Mapped[int] = mapped_column(Integer(), primary_key=True, autoincrement=True, nullable=False)
     date: Mapped[Date] = mapped_column(Date, nullable=False)
-    hours: Mapped[int] = mapped_column(Integer(), nullable=False)
-    minutes: Mapped[int] = mapped_column(Integer(), nullable=False)
-    seconds: Mapped[int] = mapped_column(Integer(), nullable=False)
+    hour: Mapped[int] = mapped_column(Integer(), nullable=False)
+    minute: Mapped[int] = mapped_column(Integer(), nullable=False)
+    second: Mapped[int] = mapped_column(Integer(), nullable=False)
 
     # Many-to-one relation with 'cards'
     card_id: Mapped[int] = mapped_column(Integer(), ForeignKey("cards.id"), index=True)
@@ -191,9 +191,9 @@ class Registers(Base):
         return (
             f"register(id={self.id!r}, "
             f"date={self.date!r}, "
-            f"hours={self.hours!r}, "
-            f"minutes={self.minutes!r}, "
-            f"seconds={self.seconds!r}), "
+            f"hour={self.hour!r}, "
+            f"minute={self.minute!r}, "
+            f"second={self.second!r}), "
             f"card_id={self.card_id!r}), "
             f"card={self.card!r}), "
             f"equipment_id={self.equipment_id!r}), "
