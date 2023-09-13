@@ -1,39 +1,29 @@
 from random import randint, choice
 from datetime import datetime, timedelta, date, time
 from dateutil.relativedelta import relativedelta
-from itertools import permutations, product
+from itertools import product
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session, sessionmaker
-
-import models
+import database.models as models
 
 # Track number of equipments created by 'make_equipments()'
 TRACK_EQUIPMENTS = 1
 
 
-def main():
-    # Create Engine
-    engine = create_engine(rf"sqlite:///my_database.db")
-
-    # Attach sessionmaker into Session
-    Session = sessionmaker(bind=engine)
-
+def main(sessionLocal):
 
     # Create 'places' data
     places = create_places()
     
     # Session Places
-    session = Session()
+    session = sessionLocal()
+
     db_places = list()
     for key, value in places.items():
-        if key == "library":
-            db_places.append(models.Places(description=value[1]))
-        elif key == "hovet":
-            db_places.append(models.Places(description=value[1]))
-        elif isinstance(value, list):
+        if isinstance(value, list):
             for item in value:
                 db_places.append(models.Places(description=item[1]))
+        else:
+            db_places.append(models.Places(description=value[1]))
 
     session.add_all(db_places)
     session.commit()
@@ -43,7 +33,8 @@ def main():
     equipments = make_equipments(places=places)
 
     # Session Equipments
-    session = Session()
+    session = sessionLocal()
+
     db_equipments = list()
     for key, value in equipments.items():
        if isinstance(value, list):
@@ -60,12 +51,13 @@ def main():
     session.commit()
     session.close()
 
-    # Creates 'arduinos' data
+    # Create 'arduinos' data
     global TRACK_EQUIPMENTS
     arduinos = create_arduinos(number_of_arduinos=TRACK_EQUIPMENTS - 1)
 
     # Session Arduinos
-    session = Session()
+    session = sessionLocal()
+
     db_arduinos = list()
     for item in arduinos:
         arduino = models.Arduinos(
@@ -78,27 +70,126 @@ def main():
     session.commit()
     session.close()
 
-    # Create student/collaborator objective
-    courses = create_courses(number_of_courses=10)
-    work_sectors = create_work_sectors(number_of_sectors=6)
-
-    # Create cards and calculate groups size
+    # Create 'cards' data
     cards = create_cards(char1="A", char2="C", group1=2, group2=4)
+
+    # Session Cards
+    session = sessionLocal()
+
+    db_cards = list()
+    for item in cards:
+        card = models.Cards(
+            uid=item["uid"],
+            type=item["type"]
+        )
+        db_cards.append(card)
+    
+    session.add_all(db_cards)
+    session.commit()
+    session.close()
+
+    # Simple ratio
+    # Students = 2/3
+    # Collaborator = 2/9
+    # Visitant = 1/9
     number_of_cards = len(cards)
     people_per_group = int(number_of_cards / 9)
-    student_group = people_per_group * 6
+    student_group = people_per_group * 6 
     collaborator_group = people_per_group * 2
 
-    # Create groups
+    # Create student objective
+    courses = create_courses(number_of_courses=10)
+
+    # Create 'students' data
     students = create_students(
         number_of_students=student_group, courses=courses)
+    
+    # Session Students
+    session = sessionLocal()
+
+    db_students = list()
+    for item in students:
+        student = models.Students(
+            name=item["name"],
+            birthday=item["birthday"],
+            course=item["course"],
+            course_start=item["course_start"],
+            card_id=item["card_id"]
+        )
+        db_students.append(student)
+
+    session.add_all(db_students)
+    session.commit()
+    session.close()
+    
+    # Create collaborator objective
+    work_sectors = create_work_sectors(number_of_sectors=6)
+
+    # Create 'collaborators' data
     collaborators = create_collaborators(
         number_of_collaborators=collaborator_group, work_sectors=work_sectors, people_per_group=people_per_group)
+    
+    # Session Collaborators
+    session = sessionLocal()
+
+    db_collaborators = list()
+    for item in collaborators:
+        collaborator = models.Collaborators(
+            name=item["name"],
+            birthday=item["birthday"],
+            work_sector=item["work_sector"],
+            work_shift_starts=item["work_shift_starts"],
+            work_shift_ends=item["work_shift_ends"],
+            card_id=item["card_id"]
+        )
+        db_collaborators.append(collaborator)
+
+    session.add_all(db_collaborators)
+    session.commit()
+    session.close()
+    
+    # Create 'visitants' data
     visitants = create_visitants(number_of_visitants=people_per_group)
 
-    # Create Registes
+    # Session Visitants
+    session = sessionLocal()
+
+    db_visitants = list()
+    for item in visitants:
+        visitant = models.Visitants(
+            name=item["name"],
+            birthday=item["birthday"],
+            document=item["document"],
+            card_id=item["card_id"]
+        )
+        db_visitants.append(visitant)
+    
+    session.add_all(db_visitants)
+    session.commit()
+    session.close()
+
+    # Create 'registers' data
     registers = make_registers(
         number_of_cards=number_of_cards, days=3, equipments=equipments)
+    
+    # Session Registers
+    session = sessionLocal()
+
+    db_registers = list()
+    for item in registers:
+        register = models.Registers(
+            date=item["date"],
+            hour=item["hour"],
+            minute=item["minute"],
+            second=item["second"],
+            card_id=item["card_id"],
+            equipment_id=item["equipment_id"]
+        )
+        db_registers.append(register)
+
+    session.add_all(db_registers)
+    session.commit()
+    session.close()
 
 
 def create_arduinos(number_of_arduinos: int) -> list:
@@ -261,14 +352,15 @@ def create_places() -> dict:
     return places
 
 
-def flatten_dict(dict):
-    temp_list = []
+def flatten_equipments(dict: dict):
+    temp_list = list()
 
-    for key in dict:
-        if isinstance(dict[key], list):
-            temp_list.extend(dict[key])
-        elif isinstance(dict[key], tuple):
-            temp_list.append(dict[key])
+    for key, value in dict.items():
+        if key == "entrances":
+            continue
+        elif isinstance(value, list):
+            for item in value:
+                temp_list.append(item["id"])
 
     return temp_list
 
@@ -289,7 +381,7 @@ def make_registers(number_of_cards: int, days: int, equipments: dict) -> list:
     register_day = (today - timedelta(days=days)).date()
 
     # Helpers
-    all_equipments = flatten_dict(equipments)
+    all_equipments = flatten_equipments(equipments)
     entrance_visitor = equipments["entrances"][0]["id"]
 
     for i in range(days):
@@ -298,24 +390,26 @@ def make_registers(number_of_cards: int, days: int, equipments: dict) -> list:
                 if j < half_students:
                     # Half students (morning)
                     registers.extend(register_sm(
-                        equipments, all_equipments, register_day, j))
-                # Half students (nocturne)
-                registers.extend(register_sn(
-                    equipments, all_equipments, register_day, j))
+                        equipments, all_equipments, register_day, j + 1))
+                else:
+                    # Half students (nocturne)
+                    registers.extend(register_sn(
+                    equipments, all_equipments, register_day, j + 1))
             elif j < number_of_collaborators:
                 if j < half_collaborators:
                     # Half collaborators (monrning)
-                    registers.extend(register_cm(equipments, register_day, j))
-                # Half collaborators (nocturne)
-                registers.extend(register_cn(equipments, register_day, j))
+                    registers.extend(register_cm(equipments, register_day, j + 1))
+                else:
+                    # Half collaborators (nocturne)
+                    registers.extend(register_cn(equipments, register_day, j + 1))
             elif j < half_visitants:
                 # Half visitant (morning)
                 registers.extend(register_vm(
-                    entrance=entrance_visitor, equipments=all_equipments, day=register_day, card_id=j))
+                    entrance=entrance_visitor, equipments=all_equipments, day=register_day, card_id=j + 1))
             else:
                 # Half visitant (nocturne)
                 registers.extend(register_vn(
-                    entrance=entrance_visitor, equipments=all_equipments, day=register_day, card_id=j))
+                    entrance=entrance_visitor, equipments=all_equipments, day=register_day, card_id=j + 1))
 
         register_day = register_day + timedelta(days=1)
 

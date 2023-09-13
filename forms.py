@@ -1,7 +1,8 @@
-from wtforms import Form, BooleanField, StringField, PasswordField, EmailField, SelectField, DateField, TimeField, validators
+from wtforms import Form, StringField, PasswordField, EmailField, SelectField, DateField, TimeField, validators
 from helpersdb import check_username, check_card_uid
 import re
 
+import database.models as models
 
 def validateUsernameAvailability(form, field):
     if not check_username(field.data):

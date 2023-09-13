@@ -1,10 +1,18 @@
+from sqlalchemy.orm import scoped_session
+
 from flask import Flask, flash, redirect, render_template, request, session, url_for, jsonify
+from flask_cors import CORS
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from helpers import login_required
 from helpersdb import query_username, create_new_user, get_by_username, get_locals, search_tables
 from forms import RegistrationForm, LoginForm, SearchTable
+
+import database.models as models
+from database.database import sessionLocal, engine
+
+models.Base.metadata.create_all(bind=engine)
 
 app = Flask(__name__)
 
@@ -16,6 +24,8 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
+# Allow Cross Origin Request
+CORS(app=app)
 
 @app.after_request
 def after_request(response):
@@ -29,14 +39,18 @@ def after_request(response):
 @app.route("/")
 @login_required
 def overview():
+    # testing
+    with sessionLocal() as session:
+        card = session.query(models.Cards).where(models.Cards.uid.like("%AA%")).all()
+        for i in range(5):
+            print(card[i].uid)
     return render_template("overview.html")
 
 
-@app.route('/graphs')
+@app.route("/graphs")
 @login_required
 def graph():
-
-    return render_template('graphs.html')
+    return render_template("graphs.html")
 
 
 @app.route("/login", methods=["GET", "POST"])

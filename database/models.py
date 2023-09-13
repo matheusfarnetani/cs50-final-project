@@ -2,13 +2,11 @@ from __future__ import annotations
 from typing import List
 from enum import Enum as Enumtype
 
-from sqlalchemy import ForeignKey, UniqueConstraint, Index
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy.types import Integer, String, Enum, Time, Date
 
-
-class Base(DeclarativeBase):
-    pass
+from database.database import Base
 
 
 # Create enum type to be used in 'cards' and 'users'

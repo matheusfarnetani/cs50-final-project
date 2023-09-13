@@ -1,25 +1,40 @@
-from datetime import date
+from sys import argv, exit
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import Session, sessionmaker
-from models import Base, Cards, Visitants
+from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
-# TODO - Create main function with kwargs to run normally without creating but when execute with -create it creates tables
+import database.models as models
+from database.populate import main as populate_main
 
-# Create Engine
-engine = create_engine(rf"sqlite:///my_database.db")
 
-# Create tables
-Base.metadata.create_all(bind=engine)
+DB_NAME = "classpass"
+DATABASE = rf"sqlite:///database/{DB_NAME}.db"
 
-# Attach sessionmaker into Session
-Session = sessionmaker(bind=engine)
+# https://towardsdatascience.com/use-flask-and-sqlalchemy-not-flask-sqlalchemy-5a64fafe22a4
+engine = create_engine(DATABASE, connect_args={"check_same_thread": False})
+sessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Create Session object
-session = Session()
 
-# pedro_card = Cards(uid="AA AA AA AA", type="visitant")
-# pedro = Visitants(name="pedro", birthday=date(2000, 3, 4), document="1234567890", card_id=1)
-# session.add(pedro_card)
-# session.add(pedro)
-# session.commit()
+class Base(DeclarativeBase):
+    pass
+
+
+if __name__ == "__main__":
+    # Arguments
+    if len(argv) == 3 and argv[1] == "-c":
+        engine = create_engine(DATABASE)
+        # Create Engine
+        if argv[2] == "-models":
+            # Create tables
+            models.Base.metadata.create_all(bind=engine)
+            print("Models created.")
+            exit(0)
+        elif argv[2] == "-populate":
+            # Execute populate
+            populate_main(sessionLocal=sessionLocal)
+            print("Models populated.")
+            exit(0)
+        else:
+            # Wrong argument :/
+            print("Invalid Argument.")
+            exit(1)
