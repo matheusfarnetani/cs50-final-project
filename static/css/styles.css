@@ -77,7 +77,7 @@ li a:hover {
     color: #C0A754;
 }
 
-#local {
+#place {
     background-color: #C0A754;
     border: none;
     border-radius: 0.1rem;
@@ -90,7 +90,7 @@ li a:hover {
     width: 15vw
 }
 
-#local:hover {
+#place:hover {
     background-color: #B2B6A7;
 }
 

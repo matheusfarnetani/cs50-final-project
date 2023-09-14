@@ -17,7 +17,8 @@
       <h3>Register</h3>
       <h4>Welcome!</h4>
     </div>
-    <form class="register-form" action="/register" method=post>
+    <form class="register-form" action="{{url_for('register')}}" method=post>
+      {{ form.csrf_token }}
       <div class="register-type">
         {{ form.type.label }}
         {{ form.type }}
@@ -33,7 +34,7 @@
       </div>
       <div class="register-card">
         {{ form.card.label }}
-        {{ form.card }}
+        {{ form.card(placeholder="Card Uid") }}
         {% if form.card.errors %}
         <div class="form-error">
           <ul>
@@ -46,7 +47,7 @@
       </div>
       <div class="register-username">
         {{ form.username.label }}
-        {{ form.username }}
+        {{ form.username(placeholder="Username") }}
         {% if form.username.errors %}
         <div class="form-error">
           <ul>
@@ -59,7 +60,7 @@
       </div>
       <div class="register-email">
         {{ form.email.label }}
-        {{ form.email }}
+        {{ form.email(placeholder="Email") }}
         {% if form.email.errors %}
         <div class="form-error">
           <ul>
@@ -72,7 +73,7 @@
       </div>
       <div class="register-password">
         {{ form.password.label }}
-        {{ form.password }}
+        {{ form.password(placeholder="Password") }}
         {% if form.password.errors %}
         <div class="form-error">
           <ul>
@@ -85,7 +86,7 @@
       </div>
       <div class="register-cfrm">
         {{ form.confirm.label }}
-        {{ form.confirm }}
+        {{ form.confirm(placeholder="Confirm Password") }}
         {% if form.confirm.errors %}
         <div class="form-error">
           <ul>
@@ -99,7 +100,7 @@
       <button class="register">Register</button>
     </form>
     <div class="register-footer">
-      <p>Already have an <a href="/login">account</a>?</p>
+      <p>Already have an account? <a href="{{url_for('login')}}">Login</a></p>
     </div>
   </div>
 </body>

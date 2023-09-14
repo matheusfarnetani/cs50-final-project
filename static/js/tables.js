@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', async function () {
-    const localButtons = document.querySelectorAll('#local');
+    const placeButtons = document.querySelectorAll('#place');
     const searchResults = document.getElementById('search-results');
-    const elementsIds = ["card", "type", "date", "time", "local"];
+    const elementsIds = ["card", "type", "date", "time", "place"];
 
     // Listen for input events
     elementsIds.forEach(function (elementId) {
@@ -11,13 +11,13 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     });
 
-    // Add click event listeners to local buttons
-    localButtons.forEach(function (localButton) {
-        localButton.addEventListener('click', function () {
-            const selectedLocal = localButton.textContent === 'All' ? '' : localButton.textContent;
+    // Add click event listeners to palce buttons
+    placeButtons.forEach(function (placeButton) {
+        placeButton.addEventListener('click', function () {
+            const selectedPlace = placeButton.textContent === 'All' ? '' : placeButton.textContent;
 
-            // Set the 'local' input value based on the button clicked
-            document.getElementById('local').value = selectedLocal;
+            // Set the 'place' input value based on the button clicked
+            document.getElementById('place').value = selectedPlace.toLowerCase();
 
             // Trigger the search
             performSearch();
@@ -52,13 +52,13 @@ document.addEventListener('DOMContentLoaded', async function () {
         const headerRow = document.createElement('tr');
         headerRow.innerHTML = `
             <th>Date</th>
-            <th>Hours</th>
-            <th>Minutes</th>
-            <th>Seconds</th>
+            <th>Hour</th>
+            <th>Minute</th>
+            <th>Second</th>
             <th>Card Type</th>
             <th>Card UID</th>
             <th>Equipment</th>
-            <th>Local</th>
+            <th>Place</th>
         `;
         table.appendChild(headerRow);
 
@@ -67,13 +67,13 @@ document.addEventListener('DOMContentLoaded', async function () {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${result['date']}</td>
-                <td>${result['hours']}</td>
-                <td>${result['minutes']}</td>
-                <td>${result['seconds']}</td>
+                <td>${result['hour']}</td>
+                <td>${result['minute']}</td>
+                <td>${result['second']}</td>
                 <td>${result['card type']}</td>
                 <td>${result['card uid']}</td>
                 <td>${result['equipment']}</td>
-                <td>${result['local']}</td>
+                <td>${result['place']}</td>
             `;
             table.appendChild(row);
         });

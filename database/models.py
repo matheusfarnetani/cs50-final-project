@@ -4,9 +4,10 @@ from enum import Enum as Enumtype
 
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy.types import Integer, String, Enum, Time, Date
+from sqlalchemy.types import Integer, String, Enum, Time, Date, Boolean
+from flask_login import UserMixin
 
-from database.database import Base
+from app import db
 
 
 # Create enum type to be used in 'cards' and 'users'
@@ -17,7 +18,7 @@ class Type(Enumtype):
 
 
 # Instances's tables
-class Arduinos(Base):
+class Arduinos(db.Model):
     __tablename__ = "arduinos"
 
     # Attributes
@@ -36,18 +37,18 @@ class Arduinos(Base):
             f"arduino(id={self.id!r}, "
             f"description={self.description!r}, "
             f"code_version={self.code_version!r}, "
-            f"equipment_id={self.equipment_id!r}, "
-            f"equipment={self.equipment!r}"
+            f"equipment_id={self.equipment_id!r}"
         )
 
 
-class Cards(Base):
+class Cards(db.Model):
     __tablename__ = "cards"
 
     # Attributes
     id: Mapped[int] = mapped_column(Integer(), primary_key=True, autoincrement=True, nullable=False)
     uid: Mapped[str] = mapped_column(String(16), unique=True, nullable=False)
     type: Mapped[Type] = mapped_column(Enum(Type), nullable=False, index=True)
+    has_user: Mapped[bool] = mapped_column(Boolean(), default=0)
 
     # One to one relation with table 'users'
     # This table is the parent
@@ -72,16 +73,11 @@ class Cards(Base):
         return (
             f"card(id={self.id!r}, "
             f"uid={self.uid!r}, "
-            f"type={self.type!r}, "
-            f"user={self.user!r}, "
-            f"register={self.register!r}, "
-            f"student={self.student!r}, "
-            f"collaborator={self.collaborator!r}, "
-            f"visitant={self.visitant!r}, "
+            f"type={self.type!r}"
         )
 
 
-class Collaborators(Base):
+class Collaborators(db.Model):
     __tablename__ = "collaborators"
 
     # Attributes
@@ -106,12 +102,11 @@ class Collaborators(Base):
             f"work_sector={self.work_sector!r}, "
             f"work_shift_starts={self.work_shift_starts!r}), "
             f"work_shift_ends={self.work_shift_ends!r}), "
-            f"card_id={self.card_id!r}), "
-            f"card={self.card!r}"
+            f"card_id={self.card_id!r})"
         )
 
 
-class Equipments(Base):
+class Equipments(db.Model):
     __tablename__ = "equipments"
 
     # Attributes
@@ -140,14 +135,11 @@ class Equipments(Base):
             f"eqp_type={self.eqp_type!r}, "
             f"date_last_inspection={self.date_last_inspection!r}, "
             f"date_next_inspection={self.date_next_inspection!r}), "
-            f"place_id={self.place_id!r}), "
-            f"place={self.place!r}), "
-            f"arduino={self.arduino!r}), "
-            f"register={self.register!r})"
+            f"place_id={self.place_id!r})"
         )
 
 
-class Places(Base):
+class Places(db.Model):
     __tablename__ = "places"
 
     # Attributes
@@ -161,12 +153,11 @@ class Places(Base):
     def __repr__(self) -> str:
         return (
             f"place(id={self.id!r}), "
-            f"description={self.description!r}, "
-            f"equipment={self.equipment!r}"
+            f"description={self.description!r}"
         )
 
 
-class Registers(Base):
+class Registers(db.Model):
     __tablename__ = "registers"
 
     # Attributes
@@ -193,13 +184,11 @@ class Registers(Base):
             f"minute={self.minute!r}, "
             f"second={self.second!r}), "
             f"card_id={self.card_id!r}), "
-            f"card={self.card!r}), "
-            f"equipment_id={self.equipment_id!r}), "
-            f"equipment={self.equipment!r}), "
+            f"equipment_id={self.equipment_id!r})"
         )
 
 
-class Students(Base):
+class Students(db.Model):
     __tablename__ = "students"
 
     # Attributes
@@ -222,20 +211,19 @@ class Students(Base):
             f"birthday={self.birthday!r}, "
             f"course={self.course!r}, "
             f"course_start={self.course_start!r}), "
-            f"card_id={self.card_id!r}), "
-            f"card={self.card!r})"
+            f"card_id={self.card_id!r})"
         )
 
 
-class Users(Base):
+class Users(db.Model, UserMixin):
     __tablename__ = "users"
 
     # Attributes
     id: Mapped[int] = mapped_column(Integer(), primary_key=True, autoincrement=True, nullable=False)
     username: Mapped[str] = mapped_column(String(32), nullable=False, unique=True)
-    email: Mapped[str] = mapped_column(String(320), nullable=False, unique=True)
+    email: Mapped[str] = mapped_column(String(128), nullable=False, unique=True)
     type: Mapped[Type] = mapped_column(Enum(Type), nullable=False, index=True)
-    hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    password: Mapped[str] = mapped_column(String(256), nullable=False)
 
     # One to one relation with table 'cards'
     # This table is the child
@@ -249,12 +237,11 @@ class Users(Base):
             f"username={self.username!r}, "
             f"email={self.email!r}, "
             f"user_type={self.user_type!r}, "
-            f"card_id={self.card_id!r}, "
-            f"card={self.card!r}"
+            f"card_id={self.card_id!r}"
         )
 
 
-class Visitants(Base):
+class Visitants(db.Model):
     __tablename__ = "visitants"
 
     # Attributes
@@ -274,6 +261,5 @@ class Visitants(Base):
             f"name={self.name!r}, "
             f"birthday={self.birthday!r}, "
             f"document={self.document!r}, "
-            f"card_id={self.card_id!r}, "
-            f"card={self.card!r}"
+            f"card_id={self.card_id!r}"
         )

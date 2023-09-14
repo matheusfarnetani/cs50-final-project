@@ -3,19 +3,16 @@ from datetime import datetime, timedelta, date, time
 from dateutil.relativedelta import relativedelta
 from itertools import product
 
-import database.models as models
+import models
 
 # Track number of equipments created by 'make_equipments()'
 TRACK_EQUIPMENTS = 1
 
 
-def main(sessionLocal):
+def main(db):
 
     # Create 'places' data
     places = create_places()
-    
-    # Session Places
-    session = sessionLocal()
 
     db_places = list()
     for key, value in places.items():
@@ -25,15 +22,8 @@ def main(sessionLocal):
         else:
             db_places.append(models.Places(description=value[1]))
 
-    session.add_all(db_places)
-    session.commit()
-    session.close()   
-
     # Create 'equipments' data
     equipments = make_equipments(places=places)
-
-    # Session Equipments
-    session = sessionLocal()
 
     db_equipments = list()
     for key, value in equipments.items():
@@ -46,17 +36,10 @@ def main(sessionLocal):
                     date_next_inspection=item["date_next_inspection"],
                     place_id=item["place_id"])
                 db_equipments.append(equipment)
-    
-    session.add_all(db_equipments)
-    session.commit()
-    session.close()
 
     # Create 'arduinos' data
     global TRACK_EQUIPMENTS
     arduinos = create_arduinos(number_of_arduinos=TRACK_EQUIPMENTS - 1)
-
-    # Session Arduinos
-    session = sessionLocal()
 
     db_arduinos = list()
     for item in arduinos:
@@ -65,16 +48,9 @@ def main(sessionLocal):
             code_version=item["code_version"],
             equipment_id=item["equipment_id"])
         db_arduinos.append(arduino)
-    
-    session.add_all(db_arduinos)
-    session.commit()
-    session.close()
 
     # Create 'cards' data
     cards = create_cards(char1="A", char2="C", group1=2, group2=4)
-
-    # Session Cards
-    session = sessionLocal()
 
     db_cards = list()
     for item in cards:
@@ -83,10 +59,6 @@ def main(sessionLocal):
             type=item["type"]
         )
         db_cards.append(card)
-    
-    session.add_all(db_cards)
-    session.commit()
-    session.close()
 
     # Simple ratio
     # Students = 2/3
@@ -103,9 +75,6 @@ def main(sessionLocal):
     # Create 'students' data
     students = create_students(
         number_of_students=student_group, courses=courses)
-    
-    # Session Students
-    session = sessionLocal()
 
     db_students = list()
     for item in students:
@@ -117,10 +86,6 @@ def main(sessionLocal):
             card_id=item["card_id"]
         )
         db_students.append(student)
-
-    session.add_all(db_students)
-    session.commit()
-    session.close()
     
     # Create collaborator objective
     work_sectors = create_work_sectors(number_of_sectors=6)
@@ -128,9 +93,6 @@ def main(sessionLocal):
     # Create 'collaborators' data
     collaborators = create_collaborators(
         number_of_collaborators=collaborator_group, work_sectors=work_sectors, people_per_group=people_per_group)
-    
-    # Session Collaborators
-    session = sessionLocal()
 
     db_collaborators = list()
     for item in collaborators:
@@ -143,16 +105,9 @@ def main(sessionLocal):
             card_id=item["card_id"]
         )
         db_collaborators.append(collaborator)
-
-    session.add_all(db_collaborators)
-    session.commit()
-    session.close()
     
     # Create 'visitants' data
     visitants = create_visitants(number_of_visitants=people_per_group)
-
-    # Session Visitants
-    session = sessionLocal()
 
     db_visitants = list()
     for item in visitants:
@@ -163,17 +118,10 @@ def main(sessionLocal):
             card_id=item["card_id"]
         )
         db_visitants.append(visitant)
-    
-    session.add_all(db_visitants)
-    session.commit()
-    session.close()
 
     # Create 'registers' data
     registers = make_registers(
         number_of_cards=number_of_cards, days=3, equipments=equipments)
-    
-    # Session Registers
-    session = sessionLocal()
 
     db_registers = list()
     for item in registers:
@@ -186,10 +134,17 @@ def main(sessionLocal):
             equipment_id=item["equipment_id"]
         )
         db_registers.append(register)
-
-    session.add_all(db_registers)
-    session.commit()
-    session.close()
+    
+    # Add into database
+    db.session.add_all(db_places)
+    db.session.add_all(db_equipments)
+    db.session.add_all(db_arduinos)
+    db.session.add_all(db_cards)
+    db.session.add_all(db_students)
+    db.session.add_all(db_collaborators)
+    db.session.add_all(db_visitants)
+    db.session.add_all(db_registers)
+    db.session.commit() 
 
 
 def create_arduinos(number_of_arduinos: int) -> list:

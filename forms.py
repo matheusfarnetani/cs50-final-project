@@ -1,63 +1,70 @@
+from flask_login import current_user
+
+from flask_wtf import FlaskForm
 from wtforms import Form, StringField, PasswordField, EmailField, SelectField, DateField, TimeField, validators
-from helpersdb import check_username, check_card_uid
-import re
+from wtforms.validators import InputRequired, Length, EqualTo, Email, Regexp
+from wtforms import ValidationError, validators
+from sqlalchemy.orm import validates
+from app import bcrypt
 
-import database.models as models
-
-def validateUsernameAvailability(form, field):
-    if not check_username(field.data):
-        raise validators.ValidationError(message="Username is not available.")
+from database.models import Users, Cards, Type
 
 
-def validateUsernameExistence(form, field):
-    if check_username(field.data):
-        raise validators.ValidationError(message="Username doesn't exist.")
+class Register_form(FlaskForm):
+    username = StringField('Username', validators=[InputRequired(), Length(min=4, max=15)])
+
+    email = EmailField('Email Address', validators=[InputRequired(), Email(
+        message="Invalid email format")])
+
+    password = PasswordField('New Password', validators=[InputRequired(), Length(min=8, max=72), EqualTo('confirm', message='Passwords must match'), Regexp(
+        r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$', message='Password must contain at least one uppercase letter, one digit, and one special character from @$!%*?&')])
+
+    confirm = PasswordField('Repeat Password', validators=[InputRequired()])
+
+    type = SelectField('User type', choices=[('student', 'student'), ('collaborator', 'collaborator'), ('visitor', 'visitor')])
+
+    card = StringField('Card UID', validators=[Length(min=11, max=11)])
+
+    # Validation on Client-Side
+    def validate_email(self, email):
+        if Users.query.filter_by(email=self.email.data).first():
+            raise ValidationError("Email already registered!")
+
+    def validate_username(self, username):
+        if Users.query.filter_by(username=self.username.data).first():
+            raise ValidationError("Username already taken!")
+        
+    @validates('type')
+    def validate_card(self, card):
+        card_record = Cards.query.filter_by(uid=self.card.data).first()
+        if not card_record:
+            raise ValidationError("Card not found!")
+
+        if card_record.has_user == 1:
+            raise ValidationError("Card already in use!")
+
+        if card_record.type != Type(self.type.data):
+            raise ValidationError("Card type does not match selected user type!")
 
 
-# Currently using Regexp instead of validatePassword
-def validatePassword(form, field):
-    """Check if password has letter, number and symbol."""
-    password = field.data
-    if not re.match(r"^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$", password):
-        raise validators.ValidationError(
-            "Password must contain: 1 lowercase; 1 uppercase; 1 digit; and 1 symbol")
 
+class Login_form(FlaskForm):
+    username = StringField('Username', validators=[InputRequired(), Length(min=4, max=15)])
+    password = PasswordField('Password', validators=[InputRequired(), Length(min=8, max=72)])
+    
+    def validate_username(self, username):
+        if not Users.query.filter_by(username=self.username.data).first():
+            raise ValidationError("Username does not exist!")
 
-# Validate card UID
-def validateCardUid(form, field):
-    """Check if Card UID exists in the database"""
-    cardUid = check_card_uid(field.data, form.type.data)
-    if not cardUid:
-        raise validators.ValidationError("Invalid card UID.")
+    def validate_password(self, password):
+        user_record = Users.query.filter_by(username=self.username.data).first()
+        if user_record and not bcrypt.check_password_hash(user_record.password, self.password.data):
+            raise ValidationError("Password is not valid!")
 
-
-class RegistrationForm(Form):
-    username = StringField('Username', [validators.Length(
-        min=4, max=15), validateUsernameAvailability], render_kw={"placeholder": "username"})
-    email = EmailField('Email Address', [validators.Email(
-        message="Invalid email format")], render_kw={"placeholder": "email@app.com"})
-    password = PasswordField('New Password', [validators.DataRequired(), validators.EqualTo('confirm', message='Passwords must match'), validators.Regexp(
-        r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$', message='Password must contain at least one uppercase letter, one digit, and one special character from @$!%*?&')], render_kw={"placeholder": "Password"})
-    confirm = PasswordField('Repeat Password', render_kw={
-                            "placeholder": "Confirm Password"})
-    type = SelectField('User type', choices=[
-        ('student', 'student'),
-        ('collaborator', 'collaborator'),
-        ('visitor', 'visitor')
-    ])
-    card = StringField('Card UID', [validators.Length(
-        min=11, max=11), validateCardUid], render_kw={"placeholder": "card UID"})
-
-
-class LoginForm(Form):
-    username = StringField(
-        'Username', [validators.DataRequired(), validateUsernameExistence])
-    password = PasswordField('Password', [validators.DataRequired()])
 
 
 class SearchTable(Form):
-    card = StringField('card', [validateCardUid], render_kw={
-                       "placeholder": "Search by card"})
+    card = StringField('card', render_kw={"placeholder": "Search by card"})
     type = SelectField('User type', choices=[
         ('all', 'All'),
         ('student', 'Student'),

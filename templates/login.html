@@ -17,10 +17,11 @@
       <h3>Login</h3>
       <h4>Welcome back!</h4>
     </div>
-    <form class="login-form" action="/login" method="post">
+    <form class="login-form" action="{{url_for('login')}}" method="post">
+      {{ form.csrf_token }}
       <div class="login-username">
         {{ form.username.label }}
-        {{ form.username }}
+        {{ form.username(placeholder="Username") }}
         {% if form.username.errors %}
         <div class="form-error">
           <ul>
@@ -33,7 +34,7 @@
       </div>
       <div class="login-password">
         {{ form.password.label }}
-        {{ form.password }}
+        {{ form.password(placeholder="Password") }}
         {% if form.password.errors %}
         <div class="form-error">
           <ul>
@@ -49,8 +50,7 @@
       </div>
     </form>
     <div class="login-footer">
-      <p>Forgot your password?</p>
-      <p>Haven't <a href="/register">register</a> yet?</p>
+      <p>New Here? <a href="{{url_for('register')}}">Create an account</a></p>
     </div>
   </div>
 </body>
