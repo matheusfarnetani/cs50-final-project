@@ -93,12 +93,13 @@ def register():
         # Get data from Cards
         card_record = models.Cards.query.filter_by(uid=form.card.data).first()
         card_uid = card_record.id
-        
+
         # Update 'has_user'
         card_record.has_user = 1
 
         # Create a new user
-        new_user = models.Users(username=username, email=email, password=bcrypt.generate_password_hash(password), type=user_type, card_id=card_uid)
+        new_user = models.Users(username=username, email=email, password=bcrypt.generate_password_hash(
+            password), type=user_type, card_id=card_uid)
         db.session.add(new_user)
         db.session.commit()
 
@@ -145,9 +146,12 @@ def tablesSearch():
     )
 
     # Joining tables with explicit join conditions
-    query = query.join(models.Registers, models.Cards.id == models.Registers.card_id)
-    query = query.join(models.Equipments, models.Registers.equipment_id == models.Equipments.id)
-    query = query.join(models.Places, models.Equipments.place_id == models.Places.id)
+    query = query.join(models.Registers, models.Cards.id ==
+                       models.Registers.card_id)
+    query = query.join(models.Equipments,
+                       models.Registers.equipment_id == models.Equipments.id)
+    query = query.join(
+        models.Places, models.Equipments.place_id == models.Places.id)
 
     # Add conditions based on user input
     if argsCard:
@@ -193,6 +197,6 @@ def tablesSearch():
     return jsonify(results)
 
 
-# Change flask config when using 'python app.py'
+# Change flask config when using 'python routes.py'
 if __name__ == "__main__":
     app.run(debug=True, port=3000)
