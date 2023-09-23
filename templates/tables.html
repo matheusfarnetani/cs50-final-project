@@ -11,9 +11,9 @@ System's Overview
 {% if places %}
 {% block buttons %}
 <div class="cl-row-bottom">
-  <button id="place">All</button>
+  <button class="btn-left" id="place">All</button>
   {% for place in places %}
-  <button id="place">{{ place.description.title() }}</button>
+  <button class="btn-left" id="place">{{ place.description.title() }}</button>
   {% endfor %}
 </div>
 {% endblock %}

@@ -152,7 +152,7 @@ def create_arduinos(number_of_arduinos: int) -> list:
     arduinos = list()
     for i in range(number_of_arduinos):
         arduino = dict()
-        arduino["description"] = f"Arduino {i + 1}"
+        arduino["description"] = f"Arduino {i + 1:02d}"
         arduino["code_version"] = "0.0.1"
         arduino["equipment_id"] = i + 1
         arduinos.append(arduino)
@@ -210,7 +210,7 @@ def create_collaborators(number_of_collaborators: int, work_sectors: list, peopl
     card_id_start = people_per_group * 6
     for i in range(number_of_collaborators):
         collaborator = dict()
-        collaborator["name"] = f"collaborator {i + 1}"
+        collaborator["name"] = f"collaborator {i + 1:04d}"
         collaborator["birthday"] = random_date(1960, 2000)
         collaborator["work_sector"] = choice(work_sectors)
         if i < people_per_group:
@@ -219,8 +219,8 @@ def create_collaborators(number_of_collaborators: int, work_sectors: list, peopl
             collaborator["work_shift_ends"] = time(hour=17, minute=0, second=0)
         else:
             collaborator["work_shift_starts"] = time(
-                hour=14, minute=0, second=0)
-            collaborator["work_shift_ends"] = time(hour=23, minute=0, second=0)
+                hour=13, minute=0, second=0)
+            collaborator["work_shift_ends"] = time(hour=22, minute=0, second=0)
 
         collaborator["card_id"] = i + card_id_start
         collaborators.append(collaborator)
@@ -232,7 +232,7 @@ def create_courses(number_of_courses: int) -> list:
     """Create 'x' courses"""
     courses = list()
     for i in range(number_of_courses):
-        courses.append(f"course {i + 1}")
+        courses.append(f"course {i + 1:02d}")
 
     return courses
 
@@ -245,7 +245,7 @@ def create_equipments(number_of_equipments: int, place_id: int, place_name: str)
         equipment = dict()
         equipment["id"] = TRACK_EQUIPMENTS
         TRACK_EQUIPMENTS += 1
-        equipment["description"] = f"{place_name} Equipment {i + 1}"
+        equipment["description"] = f"Equipment {i + 1:02d}"
         equipment["eqp_type"] = "walls"
         equipment["date_last_inspection"] = random_date(
             start_year=2023, end_year=2023)
@@ -298,11 +298,11 @@ def create_places() -> dict:
     places["work"] = list()
     for i in range(15):
         if i < 3:
-            places["entrances"].append((i + 3, f"entrance {i + 1}"))
+            places["entrances"].append((i + 3, f"entrance {i + 1:02d}"))
         elif i < 13:
-            places["classes"].append((i + 3, f"class {i - 2}"))
+            places["classes"].append((i + 3, f"class {i - 2:02d}"))
         else:
-            places["work"].append((i + 3, f"work {i - 12}"))
+            places["work"].append((i + 3, f"work {i - 12:02d}"))
 
     return places
 
@@ -376,7 +376,7 @@ def create_students(number_of_students: int, courses: list) -> list:
     students = list()
     for i in range(number_of_students):
         student = dict()
-        student["name"] = f"student {i + 1}"
+        student["name"] = f"student {i + 1:04d}"
         student["birthday"] = random_date(1980, 2005)
         student["course"] = choice(courses)
         student["course_start"] = date(randint(2019, 2023), 1, 1)
@@ -392,7 +392,7 @@ def create_visitants(number_of_visitants: int) -> list:
     card_id_starts = number_of_visitants * 8
     for i in range(number_of_visitants):
         visitant = dict()
-        visitant["name"] = f"visitant {i + 1}"
+        visitant["name"] = f"visitant {i + 1:03d}"
         visitant["birthday"] = random_date(1960, 2011)
         visitant["document"] = "valid document"
         visitant["card_id"] = i + card_id_starts
@@ -405,7 +405,7 @@ def create_work_sectors(number_of_sectors: int) -> list:
     """Creates 'x' sectors."""
     work_sectors = list()
     for i in range(number_of_sectors):
-        work_sectors.append(f"sector {i + 1}")
+        work_sectors.append(f"sector {i + 1:02d}")
 
     return work_sectors
 
@@ -438,11 +438,11 @@ def register_sm(equipments: dict, all_equipments: list, day: date, card_id: int)
             register["equipment_id"] = choice(equipments["entrances"])["id"]
         elif i == 1:
             # Mid register
-            register_time = time(hour=9, minute=0, second=0)
+            register_time = time(9, randint(0, 20), randint(0, 59))
             register["equipment_id"] = choice(equipments["classes"])["id"]
         elif i == 2:
             # Random register
-            register_time = time(10, randint(0, 59), randint(0, 59))
+            register_time = time(10, randint(0, 10), randint(0, 59))
             register["equipment_id"] = choice(all_equipments)
         else:
             # Last register
@@ -468,15 +468,15 @@ def register_sn(equipments: dict, all_equipments: list, day: date, card_id: int)
 
         if i == 0:
             # First register
-            register_time = time(19, randint(0, 59), randint(0, 59))
+            register_time = time(19, randint(0, 40), randint(0, 59))
             register["equipment_id"] = choice(equipments["entrances"])["id"]
         elif i == 1:
             # Mid register
-            register_time = time(hour=21, minute=0, second=0)
+            register_time = time(19, randint(41, 59), randint(0, 59))
             register["equipment_id"] = choice(equipments["classes"])["id"]
         elif i == 2:
             # Random register
-            register_time = time(10, randint(0, 59), randint(0, 59))
+            register_time = time(21, randint(0, 10), randint(0, 59))
             register["equipment_id"] = choice(all_equipments)
         else:
             # Last register
@@ -495,7 +495,7 @@ def register_sn(equipments: dict, all_equipments: list, day: date, card_id: int)
 def register_cm(equipments: dict, day: date, card_id: int) -> list:
     temp_list = list()
 
-    for i in range(3):
+    for i in range(4):
         register = dict()
         register["date"] = day
         register["card_id"] = card_id
@@ -506,8 +506,11 @@ def register_cm(equipments: dict, day: date, card_id: int) -> list:
         elif i == 1:
             register_time = time(8, 0, 0)
             register["equipment_id"] = choice(equipments["work"])["id"]
+        elif i == 2:
+            register_time = time(17, 0, 0)
+            register["equipment_id"] = choice(equipments["work"])["id"]
         else:
-            register_time = time(17, randint(0, 30), randint(0, 59))
+            register_time = time(17, randint(0, 59), randint(0, 59))
             register["equipment_id"] = choice(equipments["entrances"])["id"]
 
         register["hour"] = register_time.hour
@@ -522,19 +525,22 @@ def register_cm(equipments: dict, day: date, card_id: int) -> list:
 def register_cn(equipments: dict, day: date, card_id: int) -> list:
     temp_list = list()
 
-    for i in range(3):
+    for i in range(4):
         register = dict()
         register["date"] = day
         register["card_id"] = card_id
 
         if i == 0:
-            register_time = time(13, randint(30, 59), randint(0, 59))
+            register_time = time(12, randint(30, 59), randint(0, 59))
             register["equipment_id"] = choice(equipments["entrances"])["id"]
         elif i == 1:
-            register_time = time(14, 0, 0)
+            register_time = time(13, 0, 0)
+            register["equipment_id"] = choice(equipments["work"])["id"]
+        elif i == 2:
+            register_time = time(22, 0, 0)
             register["equipment_id"] = choice(equipments["work"])["id"]
         else:
-            register_time = time(23, randint(0, 30), randint(0, 59))
+            register_time = time(22, randint(0, 59), randint(0, 59))
             register["equipment_id"] = choice(equipments["entrances"])["id"]
 
         register["hour"] = register_time.hour
@@ -555,13 +561,13 @@ def register_vm(entrance: int, equipments: list, day: date, card_id: int) -> lis
         register["card_id"] = card_id
 
         if i == 0:
-            register_time = time(9, randint(0, 30), randint(0, 59))
+            register_time = time(9, randint(30, 59), randint(0, 59))
             register["equipment_id"] = entrance
         elif i == 1:
-            register_time = time(9, randint(30, 59), randint(0, 59))
+            register_time = time(10, randint(0, 59), randint(0, 59))
             register["equipment_id"] = choice(equipments)
         else:
-            register_time = time(10, randint(0, 59), randint(0, 59))
+            register_time = time(12, randint(0, 59), randint(0, 59))
             register["equipment_id"] = entrance
 
         register["hour"] = register_time.hour
@@ -582,13 +588,13 @@ def register_vn(entrance: int, equipments: list, day: date, card_id: int) -> lis
         register["card_id"] = card_id
 
         if i == 0:
-            register_time = time(20, randint(0, 30), randint(0, 59))
+            register_time = time(20, randint(30, 59), randint(0, 59))
             register["equipment_id"] = entrance
         elif i == 1:
-            register_time = time(20, randint(30, 59), randint(0, 59))
+            register_time = time(21, randint(0, 59), randint(0, 59))
             register["equipment_id"] = choice(equipments)
         else:
-            register_time = time(21, randint(0, 59), randint(0, 59))
+            register_time = time(22, randint(0, 59), randint(0, 59))
             register["equipment_id"] = entrance
 
         register["hour"] = register_time.hour

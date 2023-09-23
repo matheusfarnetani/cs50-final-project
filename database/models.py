@@ -186,6 +186,9 @@ class Registers(db.Model):
             f"card_id={self.card_id!r}), "
             f"equipment_id={self.equipment_id!r})"
         )
+    
+    def as_dict(self):
+        return {column.name: getattr(self, column.name) for column in self.__table__.columns}
 
 
 class Students(db.Model):
@@ -236,7 +239,7 @@ class Users(db.Model, UserMixin):
             f"user(id={self.id!r}, "
             f"username={self.username!r}, "
             f"email={self.email!r}, "
-            f"user_type={self.user_type!r}, "
+            f"type={self.type!r}, "
             f"card_id={self.card_id!r}"
         )
 

@@ -1,11 +1,13 @@
 from flask import Flask, flash, redirect, render_template, request, session, url_for, jsonify
-
 from forms import Register_form, Login_form, SearchTable
 from flask_bcrypt import Bcrypt, generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user, login_required
+from datetime import date
+from sqlalchemy import select, ScalarSelect
 
 import database.models as models
 from app import create_app, db, login_manager, bcrypt
+from graphs import people_by_type, equipments_by_place, registers_by_place, place_user
 
 
 @login_manager.user_loader
@@ -28,19 +30,37 @@ def after_request(response):
 @app.route("/")
 @login_required
 def overview():
-    # testing
-    # with sessionLocal() as session:
-    #     card = session.query(models.Cards).where(
-    #         models.Cards.uid.like("%AA%")).all()
-    #     for i in range(5):
-    #         print(card[i].uid)
+    # TODO - Display users info
     return render_template("overview.html")
 
 
-@app.route("/graphs")
+@app.route("/graphs/", defaults={'graph_id': 1})
+@app.route("/graphs/<int:graph_id>")
 @login_required
-def graph():
-    return render_template("graphs.html")
+def graph(graph_id):
+
+    data = people_by_type()
+
+    return render_template("graphs.html", data=data)
+
+
+@app.route("/graphs/<int:graph_id>/data")
+def graphsData(graph_id):
+    if graph_id == 1:
+        data = people_by_type()
+    elif graph_id == 2:
+        data = equipments_by_place()
+    elif graph_id == 3:
+        data = registers_by_place()
+    elif graph_id == 4:
+        argsPlace = request.args.get("place")
+        if not argsPlace:
+            argsPlace = "entrance 01"
+        data = place_user(argsPlace)
+    else:
+        return jsonify(None)
+
+    return jsonify(data)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -62,6 +82,8 @@ def login():
         login_user(user_record)
 
         if current_user.is_authenticated:
+            session["user_type"] = user_record.type
+            session["user_card_id"] = user_record.card_id
             return redirect("/")
 
     return render_template("login.html", form=form)
@@ -71,7 +93,9 @@ def login():
 @login_required
 def logout():
 
+    db.session.close()
     session.clear()
+    logout_user()
 
     return redirect('/login')
 
@@ -195,6 +219,22 @@ def tablesSearch():
         results.append(result_dict)
 
     return jsonify(results)
+
+
+@app.route("/user/data")
+@login_required
+def user_data():
+    # TODO
+    # Remake query with joins 
+    registers_query = db.session.query(models.Registers).filter_by(
+        card_id=session["user_card_id"]).all()
+    
+    registers = [register.as_dict() for register in registers_query]
+
+    for item in registers:
+        print(item)
+
+    return jsonify(registers)
 
 
 # Change flask config when using 'python routes.py'

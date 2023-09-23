@@ -21,7 +21,7 @@ class Register_form(FlaskForm):
 
     confirm = PasswordField('Repeat Password', validators=[InputRequired()])
 
-    type = SelectField('User type', choices=[('student', 'student'), ('collaborator', 'collaborator'), ('visitor', 'visitor')])
+    type = SelectField('User type', choices=[('student', 'student'), ('collaborator', 'collaborator'), ('visitant', 'visitant')])
 
     card = StringField('Card UID', validators=[Length(min=11, max=11)])
 

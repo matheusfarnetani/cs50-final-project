@@ -1,16 +1,14 @@
 {% extends "layout.html" %}
 
-{% block title %}
-System's Overview
+{% block javascript %}
+<script src="../static/js/overview.js"></script>
 {% endblock %}
+
 
 {% block body %}
 <div class="column-right">
-  {% if form %}
-  {{ form.username }}
-  {{ form.email }}
-  {{ form.type }}
-  {{ form.password }}
-  {% endif %}
+
+  <div id="registers"></div>
+
 </div>
 {% endblock %}
