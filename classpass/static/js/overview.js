@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   registers.appendChild(table);
 
   async function overview() {
-    let url = `/user/data`;
+    let url = `/api/tables?card=${cardId}`;
 
     const response = await fetch(url);
     const data = await response.json();

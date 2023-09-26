@@ -242,6 +242,23 @@ class Users(db.Model, UserMixin):
             f"type={self.type!r}, "
             f"card_id={self.card_id!r}"
         )
+    
+    # Additional attributes
+    authenticated: Mapped[bool] = False
+    active: Mapped[bool] = False
+    anonymous: Mapped[bool] = False
+
+    def is_authenticated(self):
+        return super().is_authenticated
+    
+    def is_active(self):
+        return super().is_active
+    
+    def is_anonymous(self):
+        return super().is_anonymous
+
+    def get_id(self):
+        return str(self.id)
 
 
 class Visitants(db.Model):

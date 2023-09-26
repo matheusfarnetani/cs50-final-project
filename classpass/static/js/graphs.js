@@ -52,10 +52,10 @@ function renderBarChart(title, labels, data) {
       datasets: [{
         label: 'Data',
         data: data,
-        backgroundColor: 'rgb(54, 162, 235)',
+        backgroundColor: 'rgb(174,193,120)',
       }]
     },
-    options: {
+    options: {  
       scales: {
         y: {
           ticks: {

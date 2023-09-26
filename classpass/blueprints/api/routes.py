@@ -1,8 +1,6 @@
-from flask import Blueprint, request, jsonify
-from flask_login import login_required
+from flask import Blueprint, request, jsonify, redirect, url_for
+from flask_login import login_required, current_user
 
-from ...extensions import login_manager
-from ...database.models import Users
 from .graphs import people_by_type, equipments_by_place, registers_by_place, place_user
 from .registers import getRegisters
 
@@ -10,14 +8,15 @@ from .registers import getRegisters
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
 
-@login_manager.user_loader
-def load_user(user_id):
-    return Users.query.get(int(user_id))
-
 # Routes
 @api_bp.route("/graphs/<int:graph_id>")
-# @login_required
+@login_required
 def data_graphs(graph_id):
+
+    # Check if the user is logged in
+    if not current_user.is_authenticated:
+        return redirect(url_for("common.login", next=url_for("common.login")))
+
     if graph_id == 1:
         data = people_by_type()
     elif graph_id == 2:
@@ -36,9 +35,13 @@ def data_graphs(graph_id):
 
 
 @api_bp.route('/tables')
-# @login_required
+@login_required
 def data_table():
     
+    # Check if the user is logged in
+    if not current_user.is_authenticated:
+        return redirect(url_for("common.login", next=url_for("common.login")))
+
     # Initialize route_args dictionary
     route_args = dict()
 

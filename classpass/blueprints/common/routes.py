@@ -1,9 +1,10 @@
-from flask import flash, redirect, render_template, request, session, url_for, Blueprint
-from flask_login import login_user, current_user, logout_user
+from flask import flash, redirect, render_template, request, session, url_for, Blueprint, abort
+from flask_login import login_user, current_user, logout_user, login_required
 
 from ...database.models import Users, Cards
-from ...extensions import db, bcrypt, login_manager
+from ...extensions import db, bcrypt
 from .forms import Register_form, Login_form
+from ...user_utils import url_has_allowed_host_and_scheme
 
 # Blueprint Variable
 common_bp = Blueprint("common", __name__, url_prefix="/common")
@@ -32,19 +33,30 @@ def login():
 
         login_user(user_record)
 
+        next = request.args.get('next')
+
+        if not next:
+            next = url_for("auth.index")
+        else:
+            if not url_has_allowed_host_and_scheme(next, request.host):
+                return abort(400)
+
         if current_user.is_authenticated:
             session["user_type"] = user_record.type
             session["user_card_id"] = user_record.card_id
-            return redirect(url_for("auth.index"))
+            return redirect(next)
 
     return render_template("login.html", form=form)
 
 
 @common_bp.route('/logout')
-# @login_required
+@login_required
 def logout():
 
-    db.session.close()
+    # Check if the user is logged in
+    if not current_user.is_authenticated:
+        return redirect(url_for("common.login", next=url_for("common.login")))
+
     session.clear()
     logout_user()
 

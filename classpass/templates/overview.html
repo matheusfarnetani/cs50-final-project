@@ -1,12 +1,49 @@
 {% extends "layout.html" %}
 
+{% block title %}Overview{% endblock %}
+
 {% block javascript %}
-<script src="../static/js/overview.js"></script>
+<script type="text/javascript">var cardId = "{{ card_id }}";</script>
+<script type="text/javascript" src="../static/js/overview.js"></script>
 {% endblock %}
 
+{% if acc_info %}
+{% block buttons %}
+<div class="user-data">
+  {% for key, value in acc_info.items() %}
+  <div class="user-items">
+    <span class="h">{{ key }}:</span>
+    <span class="t">{{ value }}</span>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
+{% endif %}
 
 {% block body %}
 <div class="column-right">
+
+  <div class="row">
+    <div class="main-header">
+      <h1>Overview</h1>
+      <h2>So, what this app is about?</h2>
+      <p>This is an interface to make the data of a database more user-friedly to read. It displays tables and renders
+        graphs for simple analyses.</p>
+
+      <p>Currently it servers as a portal of data from a bigger system called 'classpass', that is a college's exercise.
+        This exercise proposed to identify and create a technology system in the campus to solve any kind of problem
+        and the idea 'classpass' was created as a security system to identify who is entering in the property of the
+        college. The approach is to start using RFID Cards in every entrance and buildings and gradually turning the
+        RFIDs into NFCs as the technology could be an stantard to every new phone.</p>
+
+      <p>The work here was about architecting and developing the app that could display the data created from the
+        system, but in this case, it was generated from 'populate.py'. As serving as a tool for the security, this app
+        could help monitorate the flow of registers, see statics that could help improve the inner space of the college,
+        as a reference of 'usage' of the space. For example, the college could see that, the course 'x' is the course
+        that lesat use the library, so maybe it should ask the students the reasons for that or simply buying more books
+        about the related topics.</p>
+    </div>
+  </div>
 
   <div id="registers"></div>
 
