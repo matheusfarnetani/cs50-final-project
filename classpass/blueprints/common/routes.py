@@ -10,6 +10,16 @@ from ...user_utils import url_has_allowed_host_and_scheme
 common_bp = Blueprint("common", __name__, url_prefix="/common")
 
 
+@common_bp.after_request
+def after_request(response):
+    """Ensure responses aren't cached"""
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Expires"] = 0
+    response.headers["Pragma"] = "no-cache"
+    return response
+
+
+# Routes
 @common_bp.route("/")
 def index():
     return redirect(url_for("common.login"))

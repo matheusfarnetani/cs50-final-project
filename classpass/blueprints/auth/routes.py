@@ -8,6 +8,17 @@ from ...database.models import Cards
 # Blueprint Variable
 auth_bp = Blueprint("auth", __name__)
 
+
+@auth_bp.after_request
+def after_request(response):
+    """Ensure responses aren't cached"""
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Expires"] = 0
+    response.headers["Pragma"] = "no-cache"
+    return response
+
+
+# Routes
 @auth_bp.route("/")
 @login_required
 def index():

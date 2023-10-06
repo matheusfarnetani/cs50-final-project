@@ -8,6 +8,15 @@ from .registers import getRegisters
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
 
+@api_bp.after_request
+def after_request(response):
+    """Ensure responses aren't cached"""
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Expires"] = 0
+    response.headers["Pragma"] = "no-cache"
+    return response
+
+
 # Routes
 @api_bp.route("/graphs/<int:graph_id>")
 @login_required
@@ -37,7 +46,7 @@ def data_graphs(graph_id):
 @api_bp.route('/tables')
 @login_required
 def data_table():
-    
+
     # Check if the user is logged in
     if not current_user.is_authenticated:
         return redirect(url_for("common.login", next=url_for("common.login")))

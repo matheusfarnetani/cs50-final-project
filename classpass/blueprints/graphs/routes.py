@@ -5,6 +5,16 @@ from flask_login import login_required, current_user
 graphs_bp = Blueprint("graphs", __name__, url_prefix="/graphs")
 
 
+@graphs_bp.after_request
+def after_request(response):
+    """Ensure responses aren't cached"""
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Expires"] = 0
+    response.headers["Pragma"] = "no-cache"
+    return response
+
+
+# Routes
 @graphs_bp.route("/")
 @login_required
 def graph():

@@ -7,6 +7,17 @@ from .forms import SearchTable
 # Blueprint Variable
 tables_bp = Blueprint("tables", __name__, url_prefix="/tables")
 
+
+@tables_bp.after_request
+def after_request(response):
+    """Ensure responses aren't cached"""
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Expires"] = 0
+    response.headers["Pragma"] = "no-cache"
+    return response
+
+
+# Routes
 @tables_bp.route('/')
 @login_required
 def tables():
