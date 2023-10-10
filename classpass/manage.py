@@ -1,8 +1,9 @@
 def deploy():
     """Run deployment tasks."""
-    from classpass.routes import create_app, db
+    from . import create_app
+    from .extensions import db
     from flask_migrate import upgrade, migrate, init, stamp
-    import database.models
+    import database.models as models
 
     app = create_app()
     app.app_context().push()

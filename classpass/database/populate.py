@@ -3,13 +3,13 @@ from datetime import datetime, timedelta, date, time
 from dateutil.relativedelta import relativedelta
 from itertools import product
 
-import models
+import models0 as models
 
 # Track number of equipments created by 'make_equipments()'
 TRACK_EQUIPMENTS = 1
 
 
-def main(db):
+def main(session):
 
     # Create 'places' data
     places = create_places()
@@ -136,15 +136,15 @@ def main(db):
         db_registers.append(register)
     
     # Add into database
-    db.session.add_all(db_places)
-    db.session.add_all(db_equipments)
-    db.session.add_all(db_arduinos)
-    db.session.add_all(db_cards)
-    db.session.add_all(db_students)
-    db.session.add_all(db_collaborators)
-    db.session.add_all(db_visitants)
-    db.session.add_all(db_registers)
-    db.session.commit() 
+    session.add_all(db_places)
+    session.add_all(db_equipments)
+    session.add_all(db_arduinos)
+    session.add_all(db_cards)
+    session.add_all(db_students)
+    session.add_all(db_collaborators)
+    session.add_all(db_visitants)
+    session.add_all(db_registers)
+    session.commit() 
 
 
 def create_arduinos(number_of_arduinos: int) -> list:
