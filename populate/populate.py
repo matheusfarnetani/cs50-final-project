@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, date, time
 from dateutil.relativedelta import relativedelta
 from itertools import product
 
-import models0 as models
+import populate.models as models
 
 # Track number of equipments created by 'make_equipments()'
 TRACK_EQUIPMENTS = 1

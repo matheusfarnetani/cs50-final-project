@@ -10,10 +10,10 @@ sys.path.insert(0, project_dir)
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from models0 import Base
-from populate import main as populate_main
+from populate.models import Base
+from populate.populate import main as populate_main
 
-DATABASE = rf"sqlite:///classpass/database/classpass.db"
+DATABASE = rf"sqlite:///cs50-final-project/classpass/database/classpass.db"
 
 engine = create_engine(DATABASE)
 Session = sessionmaker(bind=engine)
